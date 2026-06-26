@@ -1,1 +1,7 @@
 project.md
+
+# Build artifacts & runtime output (do NOT commit — PRD §13)
+*.o
+qparking
+output.txt
+.claude/
