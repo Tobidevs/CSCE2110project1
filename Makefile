@@ -1,7 +1,7 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall
 TARGET   = qparking
-SRCS     = main.cpp config.cpp status.cpp
+SRCS     = main.cpp config.cpp interactions.cpp parking.cpp status.cpp
 OBJS     = $(SRCS:.cpp=.o)
 
 all: $(TARGET)

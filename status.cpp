@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 
+// Renders a slot value for display: -1, R, or the customer id.
 static std::string cellToString(int value) {
     if (value == AVAILABLE) {
         return "-1";
@@ -15,6 +16,7 @@ static std::string cellToString(int value) {
     return std::to_string(value);
 }
 
+// Prints the garage grid with the top row first and a header per garage.
 static void writeGrid(const SystemState& state, std::ostream& out) {
     const int colWidth = 10;
 
@@ -56,13 +58,18 @@ void printGarageGrid(const SystemState& state, std::ofstream& outFile) {
 }
 
 void outputGarageState(const SystemState& state, std::ofstream& outFile,
-                       int interactionNum, const std::string& desc) {
+                       int interactionNum, const std::string& desc,
+                       const std::string& result) {
     std::ostringstream out;
 
     if (interactionNum == 0) {
         out << "=== Initial Garage State ===\n";
     } else {
         out << "=== Interaction " << interactionNum << ": " << desc << " ===\n";
+    }
+
+    if (!result.empty()) {
+        out << result << "\n";
     }
 
     writeGrid(state, out);

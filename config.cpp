@@ -7,6 +7,7 @@
 #include <vector>
 #include <cstdlib>
 
+// Removes surrounding whitespace from a string.
 static std::string trim(const std::string& s) {
     size_t start = s.find_first_not_of(" \t\r\n");
     if (start == std::string::npos) {
@@ -16,6 +17,8 @@ static std::string trim(const std::string& s) {
     return s.substr(start, end - start + 1);
 }
 
+// Reads the 3-line config file (m/n, garage CSV name, customer CSV name), sizes
+// the garage grid, then loads the garage and customer files.
 SystemState initializeSystem(const std::string& configFile) {
     SystemState state;
     state.m = 0;
@@ -68,6 +71,7 @@ SystemState initializeSystem(const std::string& configFile) {
 
     cfg.close();
 
+    // Cap = one garage held in reserve; grid starts all-available.
     state.maxCars = state.n * (state.m - 1);
     state.garages.assign(state.m, std::vector<int>(state.n, AVAILABLE));
 
@@ -77,6 +81,8 @@ SystemState initializeSystem(const std::string& configFile) {
     return state;
 }
 
+// Loads the garage CSV. Columns are garages, rows are slots; the file lists the
+// top row first, so file row 0 maps to grid index n-1. Counts parked cars.
 void readGarageOccupancy(SystemState& state, const std::string& filename) {
     std::ifstream in(filename);
     if (!in.is_open()) {
@@ -144,6 +150,8 @@ void readGarageOccupancy(SystemState& state, const std::string& filename) {
     in.close();
 }
 
+// Loads the customer CSV (id, name, phone, arrival, departure) into the
+// customers list, placing each record at the index equal to its id.
 void readCustomerInfo(SystemState& state, const std::string& filename) {
     std::ifstream in(filename);
     if (!in.is_open()) {
