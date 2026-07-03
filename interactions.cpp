@@ -32,18 +32,6 @@ static std::vector<std::string> splitFields(const std::string& s) {
     return fields;
 }
 
-// Returns the {garage, row} of a parked car, or {-1,-1} if not found.
-static std::pair<int, int> findParkedCar(const SystemState& state, int id) {
-    for (int g = 0; g < state.m; ++g) {
-        for (int row = 0; row < state.n; ++row) {
-            if (state.garages[g][row] == id) {
-                return {g, row};
-            }
-        }
-    }
-    return {-1, -1};
-}
-
 void parseDropOff(const std::string& line, SystemState& state,
                   std::ofstream& outFile, int interactionNum) {
     // Everything after the "D:" marker is "name, phone, time".
@@ -63,7 +51,7 @@ void parseDropOff(const std::string& line, SystemState& state,
     // Component 3 places the car; report where it landed, or that the lot is full.
     std::string result;
     if (assignParkingSpace(state, c.id)) {
-        std::pair<int, int> loc = findParkedCar(state, c.id);
+        std::pair<int, int> loc = locateCar(state, c.id);
         std::ostringstream msg;
         msg << "Result: Customer " << c.name << " (ID: " << c.id
             << ") parked in Garage " << (loc.first + 1)
