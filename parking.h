@@ -15,4 +15,21 @@ int findAvailableGarage(const SystemState& state);
 // Returns false if the lot is full. Updates currentCars on success.
 bool assignParkingSpace(SystemState& state, int customerID);
 
+// Component 5: Lot reconfiguration (pickup side of the simulation).
+
+// Removes customerID's car from its LIFO stack, temporarily relocating any cars
+// stacked above it and then restoring them. Returns false if the car is not
+// found or no garage can stage the displaced cars. Updates currentCars.
+bool retrieveCar(SystemState& state, int customerID);
+
+// Lifts every car stacked above targetRow off garageIdx (top down) and stacks
+// them onto tempGarageIdx.
+void moveCarsAbove(SystemState& state, int garageIdx, int targetRow,
+                   int tempGarageIdx);
+
+// Pops count cars back off tempGarageIdx and restacks them onto garageIdx,
+// preserving their relative order.
+void restoreCars(SystemState& state, int tempGarageIdx, int garageIdx,
+                 int count);
+
 #endif

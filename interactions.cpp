@@ -1,6 +1,7 @@
 #include "interactions.h"
 
 #include "parking.h"
+#include "locate.h"
 #include "status.h"
 
 #include <fstream>
@@ -81,8 +82,39 @@ void parsePickUp(const std::string& line, SystemState& state,
     std::string idText = trim(line.substr(line.find(':') + 1));
     int id = std::atoi(idText.c_str());
 
-    std::string result = "Result: Pickup requested for Customer ID "
-        + std::to_string(id) + ".";
+    // Locate the car first (Component 4) so we can report its position and how
+    // many cars sit above it before Component 5 rearranges the stack.
+    std::pair<int, int> loc = locateCar(state, id);
+
+    std::string result;
+    if (loc.first < 0) {
+        result = "Result: ERROR: Customer ID " + std::to_string(id)
+            + " not found in any garage.";
+    } else {
+        int g = loc.first;
+        int r = loc.second;
+        int moved = 0;
+        for (int row = r + 1; row < state.n; ++row) {
+            if (state.garages[g][row] > 0) {
+                ++moved;
+            }
+        }
+        std::string name =
+            (id >= 0 && id < static_cast<int>(state.customers.size()))
+                ? state.customers[id].name : "";
+
+        if (retrieveCar(state, id)) {
+            std::ostringstream msg;
+            msg << "Result: Customer " << name << " (ID: " << id
+                << ") retrieved from Garage " << (g + 1)
+                << ", Row " << (r + 1) << ". " << moved
+                << " car(s) temporarily moved.";
+            result = msg.str();
+        } else {
+            result = "Result: ERROR: Could not retrieve Customer ID "
+                + std::to_string(id) + " (no temporary space available).";
+        }
+    }
 
     outputGarageState(state, outFile, interactionNum, line, result);
 }
